@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Text Editor</title>
+<style>
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    textarea {
+        flex: 1;
+        border: 1px solid #ccc;
+        resize: none;
+        padding: 10px;
+        font-size: 16px;
+    }
+    button {
+        padding: 10px 20px;
+        margin-top: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <textarea id="editor" placeholder="Write your text here..." oninput="saveText()"></textarea>
+    <button onclick="loadText()">Load</button>
+</div>
+
+<script>
+    function saveText() {
+        var textToSave = document.getElementById('editor').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "save.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("text=" + encodeURIComponent(textToSave));
+    }
+
+    function loadText() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.status == 200) {
+                    document.getElementById('editor').value = xhr.responseText;
+                } else {
+                    alert('Error loading text!');
+                }
+            }
+        };
+        xhr.open("GET", "load.php", true);
+        xhr.send();
+    }
+
+    // Load text on page load
+    window.onload = loadText;
+</script>
+
+</body>
+</html>
